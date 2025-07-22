@@ -19,13 +19,6 @@
             @enderror
         </div>
         <div class="mb-3">
-            <label for="total_biaya" class="form-label">Total Biaya</label>
-            <input type="number" name="total_biaya" id="total_biaya" class="form-control" value="{{ old('total_biaya') }}" required>
-            @error('total_biaya')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="mb-3">
             <label for="status" class="form-label">Status</label>
             <select name="status" id="status" class="form-control" required>
                 <option value="belum_bayar" {{ old('status') === 'belum_bayar' ? 'selected' : '' }}>Belum Bayar</option>

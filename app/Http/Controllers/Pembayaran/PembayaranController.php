@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Pembayaran;
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
 use App\Models\Pembayaran;
+use App\Models\TransaksiTindakan;
+use App\Models\TransaksiObat;
 use Illuminate\Http\Request;
 
 class PembayaranController extends Controller
@@ -25,12 +27,29 @@ class PembayaranController extends Controller
     {
         $request->validate([
             'kunjungan_id' => 'required|exists:kunjungan,id',
-            'total_biaya' => 'required|numeric|min:0',
             'status' => 'required|in:belum_bayar,lunas',
             'tanggal_bayar' => 'nullable|date',
         ]);
 
-        Pembayaran::create($request->only(['kunjungan_id', 'total_biaya', 'status', 'tanggal_bayar']));
+        $kunjungan = Kunjungan::findOrFail($request->kunjungan_id);
+        
+        // Hitung total biaya dari transaksi tindakan dan obat
+        $totalTindakan = TransaksiTindakan::where('kunjungan_id', $kunjungan->id)
+            ->join('tindakan', 'transaksi_tindakan.tindakan_id', '=', 'tindakan.id')
+            ->sum(\DB::raw('transaksi_tindakan.jumlah * tindakan.biaya'));
+
+        $totalObat = TransaksiObat::where('kunjungan_id', $kunjungan->id)
+            ->join('obat', 'transaksi_obat.obat_id', '=', 'obat.id')
+            ->sum(\DB::raw('transaksi_obat.jumlah * obat.harga'));
+
+        $totalBiaya = $totalTindakan + $totalObat;
+
+        Pembayaran::create([
+            'kunjungan_id' => $request->kunjungan_id,
+            'total_biaya' => $totalBiaya,
+            'status' => $request->status,
+            'tanggal_bayar' => $request->tanggal_bayar,
+        ]);
 
         return redirect()->route('pembayaran.index')->with('success', 'Pembayaran created successfully.');
     }
@@ -45,12 +64,29 @@ class PembayaranController extends Controller
     {
         $request->validate([
             'kunjungan_id' => 'required|exists:kunjungan,id',
-            'total_biaya' => 'required|numeric|min:0',
             'status' => 'required|in:belum_bayar,lunas',
             'tanggal_bayar' => 'nullable|date',
         ]);
 
-        $pembayaran->update($request->only(['kunjungan_id', 'total_biaya', 'status', 'tanggal_bayar']));
+        $kunjungan = Kunjungan::findOrFail($request->kunjungan_id);
+
+        // Hitung total biaya dari transaksi tindakan dan obat
+        $totalTindakan = TransaksiTindakan::where('kunjungan_id', $kunjungan->id)
+            ->join('tindakan', 'transaksi_tindakan.tindakan_id', '=', 'tindakan.id')
+            ->sum(\DB::raw('transaksi_tindakan.jumlah * tindakan.biaya'));
+
+        $totalObat = TransaksiObat::where('kunjungan_id', $kunjungan->id)
+            ->join('obat', 'transaksi_obat.obat_id', '=', 'obat.id')
+            ->sum(\DB::raw('transaksi_obat.jumlah * obat.harga'));
+
+        $totalBiaya = $totalTindakan + $totalObat;
+
+        $pembayaran->update([
+            'kunjungan_id' => $request->kunjungan_id,
+            'total_biaya' => $totalBiaya,
+            'status' => $request->status,
+            'tanggal_bayar' => $request->tanggal_bayar,
+        ]);
 
         return redirect()->route('pembayaran.index')->with('success', 'Pembayaran updated successfully.');
     }
