@@ -3,63 +3,64 @@
 namespace App\Http\Controllers\Transaksi;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kunjungan;
+use App\Models\Tindakan;
+use App\Models\TransaksiTindakan;
 use Illuminate\Http\Request;
 
 class TransaksiTindakanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $transaksiTindakan = TransaksiTindakan::with(['kunjungan.pasien', 'tindakan'])->get();
+        return view('transaksi.tindakan.index', compact('transaksiTindakan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
+        $tindakan = Tindakan::all();
+        return view('transaksi.tindakan.create', compact('kunjungan', 'tindakan'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'kunjungan_id' => 'required|exists:kunjungan,id',
+            'tindakan_id' => 'required|exists:tindakan,id',
+            'jumlah' => 'required|integer|min:1',
+            'catatan' => 'nullable|string',
+        ]);
+
+        TransaksiTindakan::create($request->only(['kunjungan_id', 'tindakan_id', 'jumlah', 'catatan']));
+
+        return redirect()->route('transaksi.tindakan.index')->with('success', 'Transaksi Tindakan created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(TransaksiTindakan $transaksiTindakan)
     {
-        //
+        $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
+        $tindakan = Tindakan::all();
+        return view('transaksi.tindakan.edit', compact('transaksiTindakan', 'kunjungan', 'tindakan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, TransaksiTindakan $transaksiTindakan)
     {
-        //
+        $request->validate([
+            'kunjungan_id' => 'required|exists:kunjungan,id',
+            'tindakan_id' => 'required|exists:tindakan,id',
+            'jumlah' => 'required|integer|min:1',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $transaksiTindakan->update($request->only(['kunjungan_id', 'tindakan_id', 'jumlah', 'catatan']));
+
+        return redirect()->route('transaksi.tindakan.index')->with('success', 'Transaksi Tindakan updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(TransaksiTindakan $transaksiTindakan)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $transaksiTindakan->delete();
+        return redirect()->route('transaksi.tindakan.index')->with('success', 'Transaksi Tindakan deleted successfully.');
     }
 }
