@@ -3,63 +3,55 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tindakan;
 use Illuminate\Http\Request;
 
 class TindakanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $tindakan = Tindakan::all();
+        return view('master.tindakan.index', compact('tindakan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('master.tindakan.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'biaya' => 'required|numeric|min:0',
+        ]);
+
+        Tindakan::create($request->only(['nama', 'biaya']));
+
+        return redirect()->route('master.tindakan.index')->with('success', 'Tindakan created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Tindakan $tindakan)
     {
-        //
+        return view('master.tindakan.edit', compact('tindakan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Tindakan $tindakan)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'biaya' => 'required|numeric|min:0',
+        ]);
+
+        $tindakan->update($request->only(['nama', 'biaya']));
+
+        return redirect()->route('master.tindakan.index')->with('success', 'Tindakan updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Tindakan $tindakan)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $tindakan->delete();
+        return redirect()->route('master.tindakan.index')->with('success', 'Tindakan deleted successfully.');
     }
 }

@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/home', function () {
+    return view('home');
+})->name('home');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -49,7 +52,5 @@ Route::prefix('pembayaran')->middleware(['auth', 'role:kasir'])->group(function 
 
 // Laporan Routes (Admin dan Kasir)
 Route::prefix('laporan')->middleware(['auth', 'role:admin,kasir'])->group(function () {
-    Route::get('/kunjungan', [LaporanController::class, 'kunjungan'])->name('laporan.kunjungan');
-    Route::get('/tindakan', [LaporanController::class, 'tindakan'])->name('laporan.tindakan');
-    Route::get('/obat', [LaporanController::class, 'obat'])->name('laporan.obat');
+    Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
 });

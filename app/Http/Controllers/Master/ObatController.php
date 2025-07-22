@@ -3,63 +3,56 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Obat;
 use Illuminate\Http\Request;
 
 class ObatController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $obat = Obat::all();
+        return view('master.obat.index', compact('obat'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('master.obat.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+        ]);
+
+        Obat::create($request->only(['nama', 'harga', 'stok']));
+
+        return redirect()->route('master.obat.index')->with('success', 'Obat created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Obat $obat)
     {
-        //
+        return view('master.obat.edit', compact('obat'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Obat $obat)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'stok' => 'required|integer|min:0',
+        ]);
+
+        $obat->update($request->only(['nama', 'harga', 'stok']));
+
+        return redirect()->route('master.obat.index')->with('success', 'Obat updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Obat $obat)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $obat->delete();
+        return redirect()->route('master.obat.index')->with('success', 'Obat deleted successfully.');
     }
 }

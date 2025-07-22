@@ -3,63 +3,83 @@
 namespace App\Http\Controllers\Transaksi;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kunjungan;
+use App\Models\Obat;
+use App\Models\TransaksiObat;
 use Illuminate\Http\Request;
 
 class TransaksiObatController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $transaksiObat = TransaksiObat::with(['kunjungan.pasien', 'obat'])->get();
+        return view('transaksi.obat.index', compact('transaksiObat'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
+        $obat = Obat::all();
+        return view('transaksi.obat.create', compact('kunjungan', 'obat'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'kunjungan_id' => 'required|exists:kunjungan,id',
+            'obat_id' => 'required|exists:obat,id',
+            'jumlah' => 'required|integer|min:1',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $obat = Obat::findOrFail($request->obat_id);
+        if ($obat->stok < $request->jumlah) {
+            return back()->withErrors(['jumlah' => 'Stok obat tidak cukup.']);
+        }
+
+        TransaksiObat::create($request->only(['kunjungan_id', 'obat_id', 'jumlah', 'catatan']));
+
+        $obat->decrement('stok', $request->jumlah);
+
+        return redirect()->route('transaksi.obat.index')->with('success', 'Transaksi Obat created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(TransaksiObat $transaksiObat)
     {
-        //
+        $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
+        $obat = Obat::all();
+        return view('transaksi.obat.edit', compact('transaksiObat', 'kunjungan', 'obat'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, TransaksiObat $transaksiObat)
     {
-        //
+        $request->validate([
+            'kunjungan_id' => 'required|exists:kunjungan,id',
+            'obat_id' => 'required|exists:obat,id',
+            'jumlah' => 'required|integer|min:1',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $obat = Obat::findOrFail($request->obat_id);
+        $stokKembali = $transaksiObat->jumlah; // Kembalikan stok sebelumnya
+        if ($obat->stok + $stokKembali < $request->jumlah) {
+            return back()->withErrors(['jumlah' => 'Stok obat tidak cukup.']);
+        }
+
+        $transaksiObat->update($request->only(['kunjungan_id', 'obat_id', 'jumlah', 'catatan']));
+
+        $obat->increment('stok', $stokKembali);
+        $obat->decrement('stok', $request->jumlah);
+
+        return redirect()->route('transaksi.obat.index')->with('success', 'Transaksi Obat updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(TransaksiObat $transaksiObat)
     {
-        //
-    }
+        $obat = Obat::findOrFail($transaksiObat->obat_id);
+        $obat->increment('stok', $transaksiObat->jumlah);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $transaksiObat->delete();
+        return redirect()->route('transaksi.obat.index')->with('success', 'Transaksi Obat deleted successfully.');
     }
 }

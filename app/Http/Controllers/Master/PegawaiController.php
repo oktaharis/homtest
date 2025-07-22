@@ -3,63 +3,59 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pegawai;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $pegawai = Pegawai::with('user')->get();
+        return view('master.pegawai.index', compact('pegawai'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $users = User::whereIn('role', ['petugas', 'dokter', 'kasir'])->get();
+        return view('master.pegawai.create', compact('users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id|unique:pegawai,user_id',
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+        ]);
+
+        Pegawai::create($request->only(['user_id', 'nama', 'jabatan']));
+
+        return redirect()->route('master.pegawai.index')->with('success', 'Pegawai created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Pegawai $pegawai)
     {
-        //
+        $users = User::whereIn('role', ['petugas', 'dokter', 'kasir'])->get();
+        return view('master.pegawai.edit', compact('pegawai', 'users'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Pegawai $pegawai)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id|unique:pegawai,user_id,' . $pegawai->id,
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+        ]);
+
+        $pegawai->update($request->only(['user_id', 'nama', 'jabatan']));
+
+        return redirect()->route('master.pegawai.index')->with('success', 'Pegawai updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Pegawai $pegawai)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $pegawai->delete();
+        return redirect()->route('master.pegawai.index')->with('success', 'Pegawai deleted successfully.');
     }
 }
