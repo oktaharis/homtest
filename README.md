@@ -9,60 +9,53 @@ Kasir: Mengelola pembayaran dan melihat laporan.
 
 Prasyarat
 
-PHP >= 8.2 (dengan ekstensi pdo_mysql, mbstring, openssl, bcmath, xml)
+PHP >= 8.2 (dengan ekstensi pdo_pgsql, mbstring, openssl, bcmath, xml)
 Composer
 Node.js & npm
-MySQL/MariaDB atau SQLite
+PostgreSQL
 Git
 
 Langkah Setup
-
-Kloning atau Siapkan Proyek
+1. Kloning atau Siapkan Proyek
 git clone <url-repository>
 cd klinik-app
 
-
-Instal Dependensi PHP
+2. Instal Dependensi PHP
 composer install
 
-
-Instal Dependensi Node.js (untuk Tailwind CSS)
+3. Instal Dependensi Node.js (untuk Tailwind CSS)
 npm install
 npm run build
 
 Catatan: Proyek menggunakan Tailwind CSS via CDN di app.blade.php, jadi kompilasi lokal opsional.
-
-Konfigurasi Lingkungan
+4. Konfigurasi Lingkungan
 
 Salin .env.example ke .env:cp .env.example .env
 
 
-Ubah pengaturan database di .env:DB_CONNECTION=pgsql
+Ubah pengaturan database di .env (sesuaikan dengan konfigurasi Anda):DB_CONNECTION=pgsql
 DB_HOST=localhost
-DB_PORT=3306
+DB_PORT=5432
 DB_DATABASE=klinik_app
-DB_USERNAME=root
+DB_USERNAME=postgres
 DB_PASSWORD=
 
-( SESUAIKAN SAJA )
 
 Generate kunci aplikasi:php artisan key:generate
 
 
 
+5. Jalankan Migrasi
 
-Jalankan Migrasi
-
-Buat database klinik_app di PosgtreSQL.
-Jalankan php artisan migrate 
-
-atau juga bisa
-
-Jalankan php artisan migrate:fresh
-untuk generate ulang.
+Buat database klinik_app di PostgreSQL.
+Jalankan migrasi:php artisan migrate
 
 
-Isi Data Awal (Opsional)
+Atau untuk mengulang dari awal:php artisan migrate:fresh
+
+
+
+6. Isi Data Awal (Opsional)
 
 Buat seeder:php artisan make:seeder UserSeeder
 
@@ -107,22 +100,20 @@ class UserSeeder extends Seeder
 
 Jalankan seeder:php artisan db:seed --class=UserSeeder
 
-Kalau ingin reset bisa 
-Jalankan php artisan migrate:fresh --seed
+
+Untuk reset dan seed ulang:php artisan migrate:fresh --seed
 
 
-Jalankan Server
+
+7. Jalankan Server
 php artisan serve
 
 Akses aplikasi di http://localhost:8000.
-
-Akses Aplikasi
+8. Akses Aplikasi
 
 Login: Buka /login, gunakan akun (contoh: admin/password123).
 Sign-Up: Admin bisa mendaftarkan pengguna baru di /register.
 Dashboard: Otomatis dialihkan ke /dashboard setelah login, menampilkan statistik sesuai peran.
-
-
 
 Struktur Proyek
 
@@ -142,4 +133,7 @@ Pemecahan Masalah
 
 Error Koneksi Database: Periksa pengaturan .env dan pastikan PostgreSQL berjalan.
 Route 404: Pastikan file controller dan view ada sesuai web.php.
-Izin Ditolak: Jalankan php artisan cache:clear dan php artisan route:cache.
+Izin Ditolak: Jalankan:php artisan cache:clear
+php artisan route:cache
+
+
