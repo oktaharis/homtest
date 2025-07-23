@@ -1,5 +1,8 @@
 Klinik App
-Aplikasi manajemen klinik berbasis Laravel 12 dengan SRBAC (Simple Role-Based Access Control) dan Tailwind CSS untuk antarmuka.
+Aplikasi manajemen klinik berbasis Laravel 12 dengan Simple Role-Based Access Control (SRBAC) dan Tailwind CSS untuk antarmuka pengguna.
+
+Tentang Klinik App
+Klinik App adalah sistem manajemen klinik yang memungkinkan pengelolaan data pasien, kunjungan, tindakan, obat, pembayaran, dan laporan dengan akses berbasis peran. Dibangun dengan Laravel 12, aplikasi ini menggunakan Tailwind CSS (via CDN) untuk antarmuka responsif dan PostgreSQL sebagai database.
 Peran (Roles)
 
 Admin: Mengelola pengguna, wilayah, pegawai, tindakan, obat, pasien, dan laporan. Bisa mendaftarkan pengguna baru di /register.
@@ -15,20 +18,24 @@ Node.js & npm
 PostgreSQL
 Git
 
-Langkah Setup
-1. Kloning atau Siapkan Proyek
+Instalasi
+
+Kloning Proyek
 git clone <url-repository>
 cd klinik-app
 
-2. Instal Dependensi PHP
+
+Instal Dependensi PHP
 composer install
 
-3. Instal Dependensi Node.js (untuk Tailwind CSS)
+
+Instal Dependensi Node.js (opsional untuk Tailwind CSS lokal)
 npm install
 npm run build
 
-Catatan: Proyek menggunakan Tailwind CSS via CDN di app.blade.php, jadi kompilasi lokal opsional.
-4. Konfigurasi Lingkungan
+Catatan: Proyek menggunakan Tailwind CSS via CDN di app.blade.php.
+
+Konfigurasi Lingkungan
 
 Salin .env.example ke .env:cp .env.example .env
 
@@ -45,17 +52,19 @@ Generate kunci aplikasi:php artisan key:generate
 
 
 
-5. Jalankan Migrasi
+
+Jalankan Migrasi
 
 Buat database klinik_app di PostgreSQL.
 Jalankan migrasi:php artisan migrate
 
 
-Atau untuk mengulang dari awal:php artisan migrate:fresh
+Atau untuk reset database:php artisan migrate:fresh
 
 
 
-6. Isi Data Awal (Opsional)
+
+Isi Data Awal (Opsional)
 
 Buat seeder:php artisan make:seeder UserSeeder
 
@@ -105,35 +114,102 @@ Untuk reset dan seed ulang:php artisan migrate:fresh --seed
 
 
 
-7. Jalankan Server
+
+Jalankan Server
 php artisan serve
 
 Akses aplikasi di http://localhost:8000.
-8. Akses Aplikasi
 
-Login: Buka /login, gunakan akun (contoh: admin/password123).
-Sign-Up: Admin bisa mendaftarkan pengguna baru di /register.
-Dashboard: Otomatis dialihkan ke /dashboard setelah login, menampilkan statistik sesuai peran.
+
+Fitur
+
+Autentikasi dan registrasi pengguna dengan SRBAC.
+Dashboard dinamis berdasarkan peran pengguna.
+Pengelolaan data master (pengguna, wilayah, pegawai, tindakan, obat, pasien).
+Manajemen transaksi (kunjungan, tindakan, obat, pembayaran).
+Laporan untuk admin dan kasir.
+Antarmuka responsif dengan Tailwind CSS.
+
+Environment Variables
+Tambahkan variabel berikut ke .env:
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=klinik_app
+DB_USERNAME=postgres
+DB_PASSWORD=
+APP_KEY=
+
+Deployment
+Untuk deploy ke server produksi:
+
+Siapkan server dengan PHP, PostgreSQL, dan web server (misalnya, Nginx atau Apache).
+Kloning proyek dan instal dependensi seperti di atas.
+Jalankan migrasi dan seeder.
+Konfigurasi web server untuk menunjuk ke folder public.
+Jalankan:php artisan optimize
+
+
 
 Struktur Proyek
 
-Routes: Didefinisikan di routes/web.php dengan middleware berbasis peran.
+Routes: routes/web.php dengan middleware berbasis peran.
 Controllers: AuthController untuk autentikasi, lainnya untuk data master, transaksi, pembayaran, dan laporan.
-Views: Menggunakan resources/views/layouts/app.blade.php untuk layout, dengan sidebar.blade.php dan bottombar.blade.php untuk navigasi.
+Views: resources/views/layouts/app.blade.php untuk layout, dengan sidebar.blade.php dan bottombar.blade.php untuk navigasi.
 Database: Tabel users (id, username, password, role, nama, created_at, updated_at).
 
-Catatan
+Acknowledgements
 
-Pastikan migrasi untuk tabel users dan lainnya (misalnya, pasien, kunjungan) sudah dibuat dan dijalankan.
-Tailwind CSS menggunakan CDN di app.blade.php. Untuk kompilasi lokal, atur tailwind.config.js dan jalankan npm run build.
-Uji fitur Sign-Up sebagai admin di /register.
-Untuk fitur tambahan (misalnya, grafik di dashboard dengan Chart.js), edit dashboard.blade.php.
+Laravel Documentation
+Awesome Readme Templates
+How to Write a Good README
 
+Contributing
+Kontribusi selalu diterima! Lihat contributing.md untuk panduan. Patuhi code of conduct.
+Documentation
+Laravel Documentation
 Pemecahan Masalah
 
-Error Koneksi Database: Periksa pengaturan .env dan pastikan PostgreSQL berjalan.
-Route 404: Pastikan file controller dan view ada sesuai web.php.
-Izin Ditolak: Jalankan:php artisan cache:clear
+Error Koneksi Database: Periksa .env dan pastikan PostgreSQL berjalan.
+Route 404: Pastikan controller dan view ada sesuai web.php.
+Izin Ditolak:php artisan cache:clear
 php artisan route:cache
 
 
+
+Color Reference
+
+
+
+Warna
+Hex
+
+
+
+Primary 500
+ #3b82f6
+
+
+Primary 600
+ #2563eb
+
+
+Primary 700
+ #1d4ed8
+
+
+Gray 100
+ #f3f4f6
+
+
+License
+MIT
+Badges
+
+Support
+Untuk dukungan, hubungi: support@klinikapp.com
+Roadmap
+
+Tambah dukungan multi-bahasa.
+Integrasi grafik dashboard dengan Chart.js.
+Fitur notifikasi untuk transaksi.
