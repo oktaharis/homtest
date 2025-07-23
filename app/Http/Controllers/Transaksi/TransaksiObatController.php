@@ -12,14 +12,16 @@ class TransaksiObatController extends Controller
 {
     public function index()
     {
-        $transaksiObat = TransaksiObat::with(['kunjungan.pasien', 'obat'])->get();
+        $transaksiObat = TransaksiObat::with(['kunjungan.pasien', 'obat'])
+        ->orderBy('updated_at', 'desc')
+        ->paginate(10);
         return view('transaksi.obat.index', compact('transaksiObat'));
     }
 
     public function create()
     {
         $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
-        $obat = Obat::all();
+        $obat = Obat::paginate(10);
         return view('transaksi.obat.create', compact('kunjungan', 'obat'));
     }
 
@@ -47,7 +49,7 @@ class TransaksiObatController extends Controller
     public function edit(TransaksiObat $transaksiObat)
     {
         $kunjungan = Kunjungan::where('status', 'pendaftaran')->with('pasien')->get();
-        $obat = Obat::all();
+        $obat = Obat::paginate(10);
         return view('transaksi.obat.edit', compact('transaksiObat', 'kunjungan', 'obat'));
     }
 

@@ -3,37 +3,74 @@
 @section('title', 'Pasien')
 
 @section('content')
-    <h2>Daftar Pasien</h2>
-    <a href="{{ route('master.pasien.create') }}" class="btn btn-primary mb-3">Tambah Pasien</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nama</th>
-                <th>Alamat</th>
-                <th>Wilayah</th>
-                <th>Tanggal Lahir</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($pasien as $item)
-                <tr>
-                    <td>{{ $item->id }}</td>
-                    <td>{{ $item->nama }}</td>
-                    <td>{{ $item->alamat }}</td>
-                    <td>{{ $item->wilayah ? $item->wilayah->nama : '-' }}</td>
-                    <td>{{ $item->tanggal_lahir }}</td>
-                    <td>
-                        <a href="{{ route('master.pasien.edit', $item) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('master.pasien.destroy', $item) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus pasien?')">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+<div class="max-w-7xl mx-auto">
+    <x-table-header 
+        title="Data Pasien" 
+        description="Kelola informasi pasien klinik"
+        :add-route="route('master.pasien.create')" 
+        add-text="Tambah Pasien" />
+    
+    <x-search-box placeholder="Cari berdasarkan nama pasien atau alamat..." />
+    
+    <x-data-table :headers="['ID', 'Nama Pasien', 'Alamat', 'Wilayah', 'Tanggal Lahir', 'Usia', 'Aksi']">
+        @forelse ($pasien as $item)
+            <x-table-row 
+                :edit-route="route('master.pasien.edit', $item)" 
+                :delete-route="route('master.pasien.destroy', $item)"
+                delete-confirm="Hapus data pasien {{ $item->nama }}?">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-8 w-8">
+                            <div class="h-8 w-8 rounded-full bg-pink-100 flex items-center justify-center">
+                                <span class="text-sm font-medium text-pink-700">{{ substr($item->nama, 0, 1) }}</span>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">#{{ $item->id }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ $item->nama }}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ $item->alamat }}">
+                        {{ $item->alamat }}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                        {{ $item->wilayah ? $item->wilayah->nama : '-' }}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                        {{ \Carbon\Carbon::parse($item->tanggal_lahir)->format('d/m/Y') }}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                        {{ \Carbon\Carbon::parse($item->tanggal_lahir)->age }} tahun
+                    </div>
+                </td>
+            </x-table-row>
+        @empty
+            <x-empty-state 
+                message="Belum ada data pasien" 
+                description="Tambahkan pasien untuk memulai" />
+        @endforelse
+    </x-data-table>
+    
+    @if($pasien->hasPages())
+        <div class="mt-6">
+            {{ $pasien->links('components.pagination') }}
+        </div>
+    @endif
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTableSearch();
+});
+</script>
 @endsection

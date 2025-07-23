@@ -17,13 +17,12 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+            return redirect('/login');
         }
 
-        $userRole = Auth::user()->role;
-
-        if (!in_array($userRole, $roles)) {
-            abort(403, 'Unauthorized: You do not have the required role.');
+        $user = Auth::user();
+        if (!in_array($user->role, $roles)) {
+            abort(403, 'Akses ditolak.');
         }
 
         return $next($request);

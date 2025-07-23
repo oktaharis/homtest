@@ -12,13 +12,13 @@ class KunjunganController extends Controller
 {
     public function index()
     {
-        $kunjungan = Kunjungan::with(['pasien', 'user'])->get();
+        $kunjungan = Kunjungan::with(['pasien', 'user'])->paginate(10);
         return view('transaksi.kunjungan.index', compact('kunjungan'));
     }
 
     public function create()
     {
-        $pasien = Pasien::all();
+        $pasien = Pasien::paginate(10);
         $dokter = User::where('role', 'dokter')->get();
         return view('transaksi.kunjungan.create', compact('pasien', 'dokter'));
     }
@@ -45,7 +45,8 @@ class KunjunganController extends Controller
 
     public function edit(Kunjungan $kunjungan)
     {
-        $pasien = Pasien::all();
+        // dd($kunjungan);
+        $pasien = Pasien::paginate(10);
         $dokter = User::where('role', 'dokter')->get();
         return view('transaksi.kunjungan.edit', compact('kunjungan', 'pasien', 'dokter'));
     }

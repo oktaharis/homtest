@@ -10,7 +10,7 @@ class WilayahController extends Controller
 {
     public function index()
     {
-        $wilayah = Wilayah::with('parent')->get();
+        $wilayah = Wilayah::with('parent')->paginate(10);
         return view('master.wilayah.index', compact('wilayah'));
     }
 
