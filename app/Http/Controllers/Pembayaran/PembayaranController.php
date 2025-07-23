@@ -13,7 +13,8 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayaran = Pembayaran::with('kunjungan.pasien')->get();
+        // dd(1);
+        $pembayaran = Pembayaran::with('kunjungan.pasien')->paginate(10);
         return view('pembayaran.index', compact('pembayaran'));
     }
 
@@ -56,6 +57,7 @@ class PembayaranController extends Controller
 
     public function edit(Pembayaran $pembayaran)
     {
+        // dd(1);
         $kunjungan = Kunjungan::where('status', 'selesai')->with('pasien')->get();
         return view('pembayaran.edit', compact('pembayaran', 'kunjungan'));
     }

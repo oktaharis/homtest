@@ -9,7 +9,7 @@ class PasienController extends Controller
 {
     public function index()
     {
-        $pasien = Pasien::with('wilayah')->get();
+        $pasien = Pasien::with('wilayah')->paginate(10)->withQueryString();
         return view('master.pasien.index', compact('pasien'));
     }
 

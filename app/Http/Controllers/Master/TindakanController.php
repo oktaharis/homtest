@@ -11,7 +11,7 @@ class TindakanController extends Controller
 
     public function index()
     {
-        $tindakan = Tindakan::all();
+        $tindakan = Tindakan::paginate(10);
         return view('master.tindakan.index', compact('tindakan'));
     }
 

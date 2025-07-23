@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Transaksi;
-
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
 use App\Models\Tindakan;
@@ -12,7 +10,9 @@ class TransaksiTindakanController extends Controller
 {
     public function index()
     {
-        $transaksiTindakan = TransaksiTindakan::with(['kunjungan.pasien', 'tindakan'])->get();
+        $transaksiTindakan = TransaksiTindakan::with(['kunjungan.pasien', 'tindakan'])
+        ->orderBy('updated_at', 'desc')
+        ->paginate(10);
         return view('transaksi.tindakan.index', compact('transaksiTindakan'));
     }
 

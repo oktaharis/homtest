@@ -3,43 +3,53 @@
 @section('title', 'Tambah User')
 
 @section('content')
-    <h2>Tambah User</h2>
-    <form method="POST" action="{{ route('master.users.store') }}">
+<x-form-container 
+    title="Tambah User Baru" 
+    description="Buat akun pengguna baru dengan hak akses sesuai kebutuhan"
+    :back-route="route('master.users.index')"
+    back-text="Kembali ke Daftar User">
+    
+    <form method="POST" action="{{ route('master.users.store') }}" class="space-y-6">
         @csrf
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" name="username" id="username" class="form-control" value="{{ old('username') }}" required>
-            @error('username')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-form-group label="Username" name="username" required :error="$errors->first('username')">
+                <x-form-input 
+                    name="username" 
+                    placeholder="Masukkan username unik"
+                    required />
+            </x-form-group>
+
+            <x-form-group label="Nama Lengkap" name="nama" required :error="$errors->first('nama')">
+                <x-form-input 
+                    name="nama" 
+                    placeholder="Masukkan nama lengkap"
+                    required />
+            </x-form-group>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required>
-            @error('password')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-form-group label="Password" name="password" required :error="$errors->first('password')">
+                <x-form-input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Masukkan password"
+                    required />
+            </x-form-group>
+
+            <x-form-group label="Role" name="role" required :error="$errors->first('role')">
+                <x-form-select name="role" required placeholder="Pilih role pengguna">
+                    <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="petugas" {{ old('role') === 'petugas' ? 'selected' : '' }}>Petugas</option>
+                    <option value="dokter" {{ old('role') === 'dokter' ? 'selected' : '' }}>Dokter</option>
+                    <option value="kasir" {{ old('role') === 'kasir' ? 'selected' : '' }}>Kasir</option>
+                </x-form-select>
+            </x-form-group>
         </div>
-        <div class="mb-3">
-            <label for="nama" class="form-label">Nama</label>
-            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama') }}" required>
-            @error('nama')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label for="role" class="form-label">Role</label>
-            <select name="role" id="role" class="form-control" required>
-                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="petugas" {{ old('role') === 'petugas' ? 'selected' : '' }}>Petugas</option>
-                <option value="dokter" {{ old('role') === 'dokter' ? 'selected' : '' }}>Dokter</option>
-                <option value="kasir" {{ old('role') === 'kasir' ? 'selected' : '' }}>Kasir</option>
-            </select>
-            @error('role')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <button type="submit" class="btn btn-primary">Simpan</button>
-        <a href="{{ route('master.users.index') }}" class="btn btn-secondary">Kembali</a>
+
+        <x-form-actions 
+            submit-text="Buat User" 
+            :cancel-route="route('master.users.index')" />
     </form>
+</x-form-container>
 @endsection
