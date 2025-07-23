@@ -1,215 +1,134 @@
-Klinik App
-Aplikasi manajemen klinik berbasis Laravel 12 dengan Simple Role-Based Access Control (SRBAC) dan Tailwind CSS untuk antarmuka pengguna.
+# Klinik App
 
-Tentang Klinik App
-Klinik App adalah sistem manajemen klinik yang memungkinkan pengelolaan data pasien, kunjungan, tindakan, obat, pembayaran, dan laporan dengan akses berbasis peran. Dibangun dengan Laravel 12, aplikasi ini menggunakan Tailwind CSS (via CDN) untuk antarmuka responsif dan PostgreSQL sebagai database.
-Peran (Roles)
+![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-06B6D4?logo=tailwind-css&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 
-Admin: Mengelola pengguna, wilayah, pegawai, tindakan, obat, pasien, dan laporan. Bisa mendaftarkan pengguna baru di /register.
-Petugas: Mengelola data pasien dan kunjungan.
-Dokter: Mengelola kunjungan, transaksi tindakan, dan transaksi obat.
-Kasir: Mengelola pembayaran dan melihat laporan.
+Aplikasi manajemen klinik berbasis web dengan sistem role-based access control (RBAC) untuk mengelola operasional klinik secara efisien.
 
-Prasyarat
+## Fitur Utama
 
-PHP >= 8.2 (dengan ekstensi pdo_pgsql, mbstring, openssl, bcmath, xml)
-Composer
-Node.js & npm
-PostgreSQL
-Git
+- ✅ **Manajemen Pengguna** dengan 4 level akses
+- 📊 **Dashboard Interaktif** menyesuaikan peran pengguna
+- 🏥 **Manajemen Pasien** terintegrasi
+- 💊 **Manajemen Obat & Tindakan**
+- 💳 **Sistem Pembayaran & Laporan**
+- 🔒 **Autentikasi Aman** dengan enkripsi password
 
-Instalasi
+## Daftar Peran
 
-Kloning Proyek
-git clone <url-repository>
+| Peran       | Hak Akses |
+|-------------|-----------|
+| 👨‍💻 Admin   | Full akses ke semua fitur + manajemen user |
+| 🧑‍⚕️ Dokter  | Input diagnosa, resep obat, tindakan medis |
+| 🧑‍💼 Petugas | Input data pasien & kunjungan |
+| 💰 Kasir    | Proses pembayaran & laporan transaksi |
+
+## Teknologi
+
+**Frontend:**
+- Tailwind CSS 
+- Alpine.js
+- Chart.js (untuk grafik dashboard)
+
+**Backend:**
+- Laravel 12
+- PostgreSQL 17
+
+## Instalasi
+
+### Persyaratan Sistem
+- PHP 8.2+
+- Composer 2.5+
+- Node.js 18+
+- PostgreSQL 16
+- Git
+
+### Langkah Instalasi
+
+1. **Clone repository**
+```bash
+git clone <url_repository>
 cd klinik-app
+```
 
-
-Instal Dependensi PHP
+2. **Instal dependensi**
+```bash
 composer install
-
-
-Instal Dependensi Node.js (opsional untuk Tailwind CSS lokal)
 npm install
-npm run build
+npm run build atau npm run dev
+```
 
-Catatan: Proyek menggunakan Tailwind CSS via CDN di app.blade.php.
+3. **Setup environment**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Konfigurasi Lingkungan
-
-Salin .env.example ke .env:cp .env.example .env
-
-
-Ubah pengaturan database di .env (sesuaikan dengan konfigurasi Anda):DB_CONNECTION=pgsql
-DB_HOST=localhost
-DB_PORT=5432
-DB_DATABASE=klinik_app
-DB_USERNAME=postgres
-DB_PASSWORD=
-
-
-Generate kunci aplikasi:php artisan key:generate
-
-
-
-
-Jalankan Migrasi
-
-Buat database klinik_app di PostgreSQL.
-Jalankan migrasi:php artisan migrate
-
-
-Atau untuk reset database:php artisan migrate:fresh
-
-
-
-
-Isi Data Awal (Opsional)
-
-Buat seeder:php artisan make:seeder UserSeeder
-
-
-Edit database/seeders/UserSeeder.php:<?php
-namespace Database\Seeders;
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
-class UserSeeder extends Seeder
-{
-    public function run()
-    {
-        User::create([
-            'username' => 'admin',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-            'nama' => 'Administrator'
-        ]);
-        User::create([
-            'username' => 'petugas1',
-            'password' => Hash::make('password123'),
-            'role' => 'petugas',
-            'nama' => 'Petugas Satu'
-        ]);
-        User::create([
-            'username' => 'dokter1',
-            'password' => Hash::make('password123'),
-            'role' => 'dokter',
-            'nama' => 'Dokter Satu'
-        ]);
-        User::create([
-            'username' => 'kasir1',
-            'password' => Hash::make('password123'),
-            'role' => 'kasir',
-            'nama' => 'Kasir Satu'
-        ]);
-    }
-}
-
-
-Jalankan seeder:php artisan db:seed --class=UserSeeder
-
-
-Untuk reset dan seed ulang:php artisan migrate:fresh --seed
-
-
-
-
-Jalankan Server
-php artisan serve
-
-Akses aplikasi di http://localhost:8000.
-
-
-Fitur
-
-Autentikasi dan registrasi pengguna dengan SRBAC.
-Dashboard dinamis berdasarkan peran pengguna.
-Pengelolaan data master (pengguna, wilayah, pegawai, tindakan, obat, pasien).
-Manajemen transaksi (kunjungan, tindakan, obat, pembayaran).
-Laporan untuk admin dan kasir.
-Antarmuka responsif dengan Tailwind CSS.
-
-Environment Variables
-Tambahkan variabel berikut ke .env:
+4. **Konfigurasi database** (edit .env)
+```ini
 DB_CONNECTION=pgsql
 DB_HOST=localhost
 DB_PORT=5432
 DB_DATABASE=klinik_app
 DB_USERNAME=postgres
-DB_PASSWORD=
-APP_KEY=
+DB_PASSWORD=password_anda
+```
 
-Deployment
-Untuk deploy ke server produksi:
+5. **Jalankan migrasi & seeder**
+```bash
+php artisan migrate --seed
+```
+atau 
+```bash
+php artisan migrate:fresh --seed
+```
 
-Siapkan server dengan PHP, PostgreSQL, dan web server (misalnya, Nginx atau Apache).
-Kloning proyek dan instal dependensi seperti di atas.
-Jalankan migrasi dan seeder.
-Konfigurasi web server untuk menunjuk ke folder public.
-Jalankan:php artisan optimize
+6. **Jalankan server development**
+```bash
+php artisan serve
+```
 
+## Akun Demo
 
-
-Struktur Proyek
-
-Routes: routes/web.php dengan middleware berbasis peran.
-Controllers: AuthController untuk autentikasi, lainnya untuk data master, transaksi, pembayaran, dan laporan.
-Views: resources/views/layouts/app.blade.php untuk layout, dengan sidebar.blade.php dan bottombar.blade.php untuk navigasi.
-Database: Tabel users (id, username, password, role, nama, created_at, updated_at).
-
-Acknowledgements
-
-Laravel Documentation
-Awesome Readme Templates
-How to Write a Good README
-
-Contributing
-Kontribusi selalu diterima! Lihat contributing.md untuk panduan. Patuhi code of conduct.
-Documentation
-Laravel Documentation
-Pemecahan Masalah
-
-Error Koneksi Database: Periksa .env dan pastikan PostgreSQL berjalan.
-Route 404: Pastikan controller dan view ada sesuai web.php.
-Izin Ditolak:php artisan cache:clear
-php artisan route:cache
+| Peran   | Username | Password    |
+|---------|----------|-------------|
+| Admin   | admin    | password123   |
+| Dokter  | dokter1  | password123   |
+| Petugas | petugas1 | password123   |
+| Kasir   | kasir1   | password123   |
 
 
+## Cara Berkontribusi
 
-Color Reference
+1. Fork project ini
+2. Buat branch fitur baru (`git checkout -b fitur-baru`)
+3. Commit perubahan (`git commit -m 'Tambahkan fitur baru'`)
+4. Push ke branch (`git push origin fitur-baru`)
+5. Buat Pull Request
 
+## Troubleshooting
 
-
-Warna
-Hex
+**Masalah**                          | **Solusi**
+------------------------------------|-----------------------------------------
+Error koneksi database              | Periksa credential di .env dan pastikan PostgreSQL berjalan
+Class not found                     | Jalankan `composer dump-autoload`
+Asset tidak terload                 | Jalankan `npm run build` ulang
+Route tidak ditemukan               | Clear cache route: `php artisan route:clear`
 
 
 
-Primary 500
- #3b82f6
+## Lisensi
 
+[MIT License](https://opensource.org/licenses/MIT)
 
-Primary 600
- #2563eb
+## Kontak
 
+Untuk pertanyaan lebih lanjut:
+- Email: [oktaharis.work@gmail.com]
+- WhatsApp: [+62 858-8947-3650]
 
-Primary 700
- #1d4ed8
+---
 
-
-Gray 100
- #f3f4f6
-
-
-License
-MIT
-Badges
-
-Support
-Untuk dukungan, hubungi: support@klinikapp.com
-Roadmap
-
-Tambah dukungan multi-bahasa.
-Integrasi grafik dashboard dengan Chart.js.
-Fitur notifikasi untuk transaksi.
+**© 2025 Klinik App** - Dibangun dengan ❤️ untuk pelayanan kesehatan yang lebih baik :)
